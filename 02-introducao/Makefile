@@ -1,4 +1,4 @@
-name-of-the-file = pdi-01-apresentacao
+name-of-the-file = pdi-02-introducao
 
 $(name-of-the-file).pdf: $(name-of-the-file).ps 
 	ps2pdf $(name-of-the-file).ps
