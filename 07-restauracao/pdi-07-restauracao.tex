@@ -1,0 +1,223 @@
+\input{../slides-common/preambule}
+
+\pdsetup{
+	lf = {\cursopequeno},
+	rf = {Restauração}, 
+	cf = {\arabic{slide}~/~\pageref*{lastslide}},
+	palette = {\palette}, 
+	randomdots={false}
+}
+
+%opening
+\title{\cursogrande\\ \vspace{1cm}Restauração e imagens}
+\author{Ronaldo de Freitas Zampolo\\FCT-ITEC-UFPA}
+%\date{ }
+
+\begin{document}
+   \maketitle[randomdots={false}]
+   \begin{slide}{Agenda}
+      \tableofcontents[content=sections]
+   \end{slide}
+
+\section[ slide = true]{Introdução}
+   \begin{slide}[toc=]{Conceitos iniciais}
+      \begin{itemize}
+       \item Objetivo
+	       \begin{itemize}
+		       \item Melhorar a qualidade de uma imagem
+		       \item Qualidade em qual sentido? 
+			       \begin{itemize}
+				       \item Critérios objetivos: métrica, equação
+				       \item Critérios subjetivos: opinião de pessoas
+				       \item Critérios objetivos perceptuais: modelo da percepção humana da qualidade visual
+			       \end{itemize}
+	       \end{itemize}
+       \item Restauração \emph{versus} Realce 
+	       \begin{itemize}
+		       \item Realce: qualidade estética/subjetiva (alguém olha e avalia)
+		       \item Restauração: há um modelo matemático para o sistema de formação de imagem e a definição de um ótimo matemático
+	       \end{itemize}
+       \end{itemize}
+   \end{slide}
+
+\section[slide=true]{Modelo dos sistemas de formação e restauração}
+\begin{slide}[toc=]{Modelos de formação/degradação e restauração}
+	\begin{itemize}
+		\item Sistemas de degradação e restauração
+			\begin{center}
+				\includegraphics[width=0.55\textwidth]{figs/5-01}
+			\end{center}
+		\item Modelo de degradação:
+			\begin{align*}
+				g(x,y) &= h(x,y)\ast f(x,y) + \eta(x,y)\\
+				G(u,v) &= H(u,v) F(u,v) + N(u,v)
+			\end{align*}
+		\item Modelo de restauração:
+			\begin{align*}
+				\hat f(x,y) &= R\{g(x,y)\}\\
+					    &= R\{h(x,y)\ast f(x,y) + \eta(x,y)\}
+			\end{align*}
+	\end{itemize}
+\end{slide}
+   
+\section[slide=true]{Ruído}
+\begin{slide}[toc=]{Fontes de ruído}
+	Algumas fontes de ruído:
+	\begin{itemize}[type=1]
+		\item Ruído térmico: 
+			\begin{itemize}
+				\item Partículas carregadas nos foto-sensores.
+				\item Inerente à agitação devido à temperatura.
+			\end{itemize}
+		\item Intensidade de iluminação: 
+			\begin{itemize}
+				\item Ruído proporcional à intensidade luminosa.
+				\item Modelo AWGN não se aplica (ruído multiplicativo).
+			\end{itemize}
+		\item Interferências no processo de transmissão.
+	\end{itemize}
+\end{slide}
+     
+\begin{slide}[toc=]{Tipos de ruído}
+Ruído aditivo do tipo branco:
+	\twocolumn{
+		\begin{itemize}
+			\item Ruído gaussiano:
+				\begin{equation*}
+					p(z)=\frac{1}{\sqrt{2\pi}}\exp\left\{-\frac{(z-\bar z)^2}{2\sigma ^2}\right\}
+				\end{equation*}
+				\vspace{0.5cm}
+				\begin{figure}[b!]
+					\centering
+					\includegraphics[width=0.6\textwidth]{figs/5-02a}
+				\end{figure}
+		\end{itemize}}
+		{
+		\begin{itemize}
+			\item Ruído Rayleigh:
+				\begin{equation*}
+					p(z)=\begin{cases}
+						\frac{2}{b}(z-a)\exp\left\{-\frac{(z-a)^2}{b}\right\}, & z\geq a\\
+						0, & z<a
+					\end{cases}
+				\end{equation*}
+				\begin{figure}[b!]
+					\centering
+					\includegraphics[width=0.6\textwidth]{figs/5-02b}
+				\end{figure}
+		\end{itemize}}
+\end{slide}
+
+\begin{slide}[toc=]{Tipos de ruído}
+Ruído aditivo do tipo branco:
+	\twocolumn{
+		\begin{itemize}
+			\item Ruído Erlang (Gama):
+				\begin{align*}
+					p(z)&=\begin{cases}
+						\frac{a^bz^{b-1}}{(b-1)!}(z-a)\exp\left\{-az\right\}, & z\geq 0\\
+						0, & z<0
+					\end{cases}\\
+					&a>0, \quad b \in \mathbb{N}^\ast
+				\end{align*}
+				%\vspace{0.5cm}
+				\begin{figure}[b!]
+					\centering
+					\includegraphics[width=0.6\textwidth]{figs/5-02c}
+				\end{figure}
+		\end{itemize}}
+		{
+		\begin{itemize}
+			\item Ruído exponencial:
+				\begin{align*}
+					p(z)&=\begin{cases}
+						a\exp\left\{-az\right\}, & z\geq 0\\
+						0, & z<a
+					\end{cases}\\
+					& a>0
+				\end{align*}
+				\begin{figure}[b!]
+					\centering
+					\includegraphics[width=0.6\textwidth]{figs/5-02d}
+				\end{figure}
+		\end{itemize}}
+\end{slide}
+
+\begin{slide}[toc=]{Tipos de ruído}
+Ruído aditivo do tipo branco:
+	\twocolumn{
+		\begin{itemize}
+			\item Ruído uniforme:
+				\begin{equation*}
+					p(z)=\begin{cases}
+						\frac{1}{(b-a)}, & a\leq z\leq b\\
+						0, & \text{outro caso}
+					\end{cases}
+				\end{equation*}
+				\vspace{0.8cm}
+				\begin{figure}[b!]
+					\centering
+					\includegraphics[width=0.6\textwidth]{figs/5-02e}
+				\end{figure}
+		\end{itemize}}
+		{
+		\begin{itemize}
+			\item Ruído impulsivo (sal e pimenta):
+				\begin{equation*}
+					p(z)=\begin{cases}
+						P_a, & z=a\\
+						P_b, & z=b\\
+						0, & \text{outro caso}
+					\end{cases}
+				\end{equation*}
+				\begin{figure}[b!]
+					\centering
+					\includegraphics[width=0.6\textwidth]{figs/5-02f}
+				\end{figure}
+		\end{itemize}}
+\end{slide}
+
+\begin{slide}[toc=]{Uso do histograma na identificação de ruído aditivo}
+	\twocolumn{
+	\begin{itemize}
+		\item Imagem de teste (sintética)
+			\begin{center}
+				\includegraphics[width=0.8\textwidth]{figs/5-03}
+			\end{center}
+	\end{itemize}}
+        {
+	\begin{itemize}
+		\item Procedimento:
+			\begin{itemize}
+				\item Adiciona ruído de determinado tipo à imagem de teste
+				\item Calcula e exibe o histograma
+				\item Compara com as funções de densidade de probabilidade
+				\item Identifica o tipo por semelhança
+			\end{itemize}
+	\end{itemize}
+	}
+\end{slide}
+      
+\begin{slide}[toc=]{Uso do histograma na identificação de ruído aditivo}
+Exemplos:
+	\begin{center}
+		\includegraphics[width=0.7\textwidth]{figs/5-04a}
+	\end{center}
+\end{slide}
+
+\begin{slide}[toc=]{Uso do histograma na identificação de ruído aditivo}
+Exemplos:
+	\begin{center}
+		\includegraphics[width=0.7\textwidth]{figs/5-04b}
+	\end{center}
+\end{slide}
+      
+\begin{slide}[toc=]{Ruído periódico}
+O ruído periódico mostra-se de maneira clara no domínio espectral !
+	\begin{center}
+		\includegraphics[width=0.45\textwidth]{figs/5-05a}
+		\includegraphics[width=0.45\textwidth]{figs/5-05b}
+	\end{center}
+\end{slide}
+
+\end{document}
