@@ -1,5 +1,6 @@
 \input{../slides-common/preambule}
 
+\DeclareMathOperator*{\mediana}{mediana}
 \pdsetup{
 	lf = {\cursopequeno},
 	rf = {Restauração}, 
@@ -218,6 +219,185 @@ O ruído periódico mostra-se de maneira clara no domínio espectral !
 		\includegraphics[width=0.45\textwidth]{figs/5-05a}
 		\includegraphics[width=0.45\textwidth]{figs/5-05b}
 	\end{center}
+\end{slide}
+
+\section[slide=true]{Restauração em presença de ruído somente}
+\begin{slide}{Introdução}
+	\begin{itemize}
+		\item A imagem é degradada apenas por ruído
+		\item Não há efeitos de distorção em frequência
+		\item Modelo de degradação:
+			\begin{itemize}
+				\item Domínio espacial:
+					\begin{equation*}
+						g(x,y) = f(x,y) + \eta(x,y)
+					\end{equation*}
+				\item Domínio da frequência:
+					\begin{equation*}
+						G(u,v) = F(u,v) + N(u,v)
+					\end{equation*}
+			\end{itemize}
+	\end{itemize}
+\end{slide}
+
+\begin{slide}{Filtragem espacial}
+	Filtros de média\vspace{0.5cm}
+	\twocolumn{
+		\begin{itemize}
+			\item Média aritmética
+				\begin{equation*}
+					\hat f(x,y) = \frac{1}{mn} \sum_{(s,t)\in S_{xy}} g(s,t)
+				\end{equation*}
+			\item Média geométrica
+				\begin{equation*}
+					\hat f(x,y) =  \left [ \prod_{(s,t)\in S_{xy}} g(s,t) \right ]^\frac{1}{mn}
+				\end{equation*}
+				\footnotesize{Tende a perder menos detalhes que o filtro de média aritmética.}
+		\end{itemize}
+	}{
+		
+		\begin{itemize}
+			\item Média harmônica
+				\begin{equation*}
+					\hat f(x,y) =  \frac{mn}{\sum_{(s,t)\in S_{xy}} \frac{1}{g(s,t)}}
+				\end{equation*}
+				{\footnotesize{Lida bem com ruído do tipo sal; falha para ruído do tipo pimenta; ok para outros tipos de ruído.}}
+			\item Média contra-harmônica.
+				\begin{equation*}
+					\hat f(x,y) =  \frac{\sum_{(s,t)\in S_{xy}} g(s,t)^{Q+1}}{\sum_{(s,t)\in S_{xy}} g(s,t)^{Q}}
+				\end{equation*}
+				\footnotesize{Funciona com ruídos do tipo sal ($Q<0$) e pimenta ($Q>0$).}
+		\end{itemize}
+	}
+\end{slide}
+
+\begin{slide}{Filtragem espacial}
+	Filtros de média: resultados\\
+	\centering
+	\includegraphics[width=0.5\textwidth]{figs/5-7ab}\\
+	\tiny{(a)\hspace{4cm} (b)}\\
+	\includegraphics[width=0.5\textwidth]{figs/5-7cd}\\
+	\tiny{(c)\hspace{4cm} (d)}\\
+	\tiny{(a) imagem original; (b) imagem degradada por AWGN; (c) restauração por média aritmética (filtro 3$\times$3); (d) restauração por média geométrica (filtro 3$\times$3).}
+\end{slide}
+\begin{slide}{Filtragem espacial}
+	Filtros de média: resultados\\
+	\centering
+	\includegraphics[width=0.5\textwidth]{figs/5-8ab}\\
+	\tiny{(a)\hspace{4cm} (b)}\\
+	\includegraphics[width=0.5\textwidth]{figs/5-8cd}\\
+	\tiny{(c)\hspace{4cm} (d)}\\
+	\tiny{(a) imagem com ruído pimenta (probabilidade de 0,1); (b) imagem com ruído sal (probabilidade 0,1); (c) restauração de (a) com média contra-harmônica ($Q = 1,5$); (d) restauração de (b) com  média contra-harmônica ($Q=-1,5$).}
+\end{slide}
+
+\begin{slide}{Filtros de estatística de ordem}
+	\twocolumn
+	{
+		\begin{itemize}
+			\item Filtro de mediana
+				\begin{equation*}
+					\hat f(x,y) = \mediana_{(s,t)\in S_{xy} }g(s,t)
+				\end{equation*}
+			\item Filtro de mínimo
+				\begin{equation*}
+					\hat f(x,y) = \min_{(s,t)\in S_{xy} }g(s,t)
+				\end{equation*}
+			\item Filtro de máximo
+				\begin{equation*}
+					\hat f(x,y) = \max_{(s,t)\in S_{xy} }g(s,t)
+				\end{equation*}
+		\end{itemize}
+	}
+	{
+		\begin{itemize}
+			\item Filtro de ponto médio
+				\begin{equation*}
+					\hat f(x,y) = \frac{1}{2}\left [\min_{(s,t)\in S_{xy} }g(s,t)+\max_{(s,t)\in S_{xy} }g(s,t)\right ]
+				\end{equation*}
+			\item Filtro de média alfa cortada
+				\begin{equation*}
+					\hat f(x,y) = \frac{1}{mn-d}\sum_{(x,y)\in S_{xy}}g_r(s,t)
+				\end{equation*}
+				onde $g_r$ corresponde a $g$ em $S_{xy}$ com eliminação dos $d/2$ pixels de menor valor e dos $d/2$ pixels de maior valor.
+		\end{itemize}
+
+	}
+\end{slide}
+
+\begin{slide}{Filtros adaptativos}
+	\begin{itemize}
+		\item Objetivo: redução de ruído adaptado às características locais de uma imagem
+		\item Comportamento desejado:
+			\twocolumn{
+			\begin{itemize}
+				\item Se $\sigma^2_\eta =0$,
+					\begin{equation*}
+						\hat f(x,y) = g(x,y)
+					\end{equation*}
+
+				\item Se $\sigma^2_L = \sigma^2_\eta$,
+					\begin{align*}
+						\hat f(x,y)=&\frac{1}{mn}\sum_{(x,y)\in S_{xy}}g(s,t)\\
+						=& m_L
+					\end{align*}
+					onde $\sigma_L^2$ é a variância da imagem original em $S_{xy}$.
+			\end{itemize}
+					}{
+						\begin{itemize}
+				\item Se $\sigma_L^2>\sigma_\eta^2$,
+					\begin{equation*}
+						\hat f(x,y) \approx g(x,y)
+					\end{equation*}
+				\item Aproximação do comportamento desejado:
+					\begin{equation*}
+						\hat f(x,y) = g(x,y) - \frac{\sigma_\eta^2}{\sigma_L^2}\left [ g(x,y) - m_L \right ]
+					\end{equation*}
+			\end{itemize}}
+	\end{itemize}
+\end{slide}
+
+\begin{slide}{Filtro adaptativo de mediana}
+	\begin{itemize}
+		\item Objetivo: maior preservação de detalhes que no filtro de mediana convencional
+			\footnotesize{
+			\begin{algorithm}[H]
+				\DontPrintSemicolon
+				%\KwResult{Write here the result }
+				\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+				\Input{Imagem degradada $g$, $S_\text{max}$, $(x,y)$, tamanho inicial de $S_{xy}$}
+				\Output{$\hat f(x,y)$}
+				\BlankLine
+				%reinicia tamanho de $S_{xy}$\;
+				\nlset{inicio}Define $S_{xy}$\;\label{ret}
+				$z_\text{min} \leftarrow $ valor mínimo em $S_{xy}$\;
+				$z_\text{max} \leftarrow  $ valor máximo em $S_{xy}$\;
+				$z_\text{med} \leftarrow $ mediana em $S_{xy}$\;
+				$z_{xy} \leftarrow g(x,y)$\;
+				\BlankLine
+				$A_1 \leftarrow z_\text{med} - z_\text{min}$\;
+				$A_2 \leftarrow z_\text{med} - z_\text{max}$\;
+				\If{$A_1>0\text{ E }A_2<0$}{
+					$B_1 \leftarrow z_{xy} - z_\text{min}$\;
+					$B_2 \leftarrow z_{xy} - z_\text{max}$\;
+					\lIf{$B_1>0\text{ E }B_2<0$}{
+						Retorna $z_\text{med}$
+					}
+				}
+				\Else{
+					Aumenta o tamanho de $S_{xy}$\;
+					\lIf{$S_{xy}\leq S_\text{max}$}{
+						Volta para~\ref{ret}
+					}
+					\lElse{
+						Retorna $z_\text{med}$
+					}
+				}
+
+					
+				
+				\caption{\footnotesize Filtragem adaptativa de mediana}
+			\end{algorithm}}
+	\end{itemize}
 \end{slide}
 
 \end{document}
