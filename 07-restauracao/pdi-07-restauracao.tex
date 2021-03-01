@@ -380,12 +380,13 @@ O ruído periódico mostra-se de maneira clara no domínio espectral !
 					$B_1 \leftarrow z_{xy} - z_\text{min}$\;
 					$B_2 \leftarrow z_{xy} - z_\text{max}$\;
 					\lIf{$B_1>0\text{ E }B_2<0$}{
-						Retorna $z_\text{med}$
+						Retorna $z_{xy}$
 					}
+					\lElse{Retorna $z_\text{med}$}
 				}
 				\Else{
 					Aumenta o tamanho de $S_{xy}$\;
-					\lIf{$S_{xy}\leq S_\text{max}$}{
+					\lIf{Tamanho de $S_{xy}\leq S_\text{max}$}{
 						Volta para~\ref{ret}
 					}
 					\lElse{
@@ -400,4 +401,215 @@ O ruído periódico mostra-se de maneira clara no domínio espectral !
 	\end{itemize}
 \end{slide}
 
+\section[ slide = true]{Redução de ruído periódico no domínio da frequência}
+\begin{slide}{Filtros rejeita banda}
+	Magnitude da resposta em frequência dos filtros Ideal, Butterworth (1ª ordem) e Gaussiano
+	\begin{center}
+		\includegraphics[width = \textwidth]{figs/5-15}
+	\end{center}
+\end{slide}
+
+\begin{slide}{Filtros rejeita banda}
+	Exemplo com filtro de Butterworth
+	\begin{center}
+		\includegraphics[width = 0.65\textwidth]{figs/5-16}
+	\end{center}
+\end{slide}
+
+
+\begin{slide}{Filtros passa banda}
+	\begin{itemize}
+		\item A síntese de filtros passa banda pode ser feita a partir de filtros rejeita banda:
+			\begin{equation*}
+				H_\text{BP}(u,v) = 1-H_\text{BR}(u,v)
+			\end{equation*}
+	\end{itemize}
+\end{slide}
+
+\begin{slide}{Filtros notch}
+	Magnitude da resposta em frequência de filtros notch do tipo Ideal, Butterworth (2ª ordem) e Gaussiano
+	\begin{center}
+		\includegraphics[width = 0.7\textwidth]{figs/5-18}
+	\end{center}
+
+\end{slide}
+
+\begin{slide}{Filtros notch}
+	Exemplo com filtro passa notch
+	\begin{center}
+		\includegraphics[height = 0.7\textheight]{figs/5-19}
+	\end{center}
+
+\end{slide}
+
+\begin{slide}{Filtragem notch ótima}
+	\begin{itemize}
+		\item Objetivo: melhorar os resultados por meio de adaptação às características locais de uma imagem
+		\item Procedimentos:\\
+		\begin{itemize}
+			\item Determinar o padrão de ruído
+				\begin{equation*}
+					\eta(x,y) = \mathfrak F^{-1}\{H_\text{NP}(u,v)G(u,v)\}
+				\end{equation*}
+			\item Imagem restaurada
+				\begin{equation*}
+					\hat f(x,y) = g(x,y) - w(x,y)\eta(x,y)
+				\end{equation*}
+				\begin{itemize}
+					\item Critério: minimizar a variância local de $\hat f$
+						\begin{equation*}
+							\sigma^2(x,y) = \frac{1}{(2a+1)(2b+1)}\sum_{s=-a}^a\sum_{t=-b}^b\left [\hat f(x+s,y+t)-\mu(x,y)\right ]^2
+						\end{equation*}
+				\end{itemize}
+		\end{itemize}
+	\end{itemize}
+\end{slide}
+
+\begin{slide}{Filtragem notch ótima}
+	\begin{itemize}
+		\item Procedimentos:\\
+		\begin{itemize}
+			\item Imagem restaurada
+				\begin{itemize}
+					\item Critério: minimizar a variância local de $\hat f$
+						\begin{align*}
+							\mu(x,y) =& \frac{1}{(2a+1)(2b+1)}\sum_{s=-a}^a\sum_{t=-b}^b \hat f(x+s,y+t)\\
+							\frac{\partial \sigma^2(x,y)}{\partial w(x,y)} =& 0\\
+							w(x,y) =& \frac{\overline{g(x,y)\eta(x,y)}-\overline g(x,y)\overline\eta(x,y)}{\overline{\eta^2}(x,y) - \overline\eta^2(x,y)}
+						\end{align*}
+						Obs.: $w(x,y)$ é considerado constante para uma vizinhança.
+				\end{itemize}
+		\end{itemize}
+	\end{itemize}
+\end{slide}
+
+\section[ slide = true]{Degradações lineares e invariantes no espaço}
+\begin{slide}{Sistema de formação de imagem}
+	\begin{itemize}
+		\item Modelo adotado
+			\begin{align*}
+				g(x,y) =& H\left [ f(x,y) \right ] + \eta(x,y) \qquad \text{ (modelo mais amplo)}\\
+				=& h(x,y)\ast f(x,y) + \eta(x,y) \\
+				G(u,v) =& H(u,v)F(u,v) + N(u,v) 
+			\end{align*}
+		\item Restrição inicial: $\eta(x,y)=0$
+			\begin{align*}
+				g(x,y) =& h(x,y)\ast f(x,y)\qquad \text{(modelo linear e invariante)}\\
+				=&\int_{-\infty}^\infty\int_{-\infty}^\infty f(\alpha,\beta) h(x-\alpha, y-\beta)\, d\alpha\, d\beta\\
+				G(u,v) =& H(u,v)F(u,v) \qquad \text{(modelo LI no domínio da frequência)}
+			\end{align*}
+		\item A resposta em frequência é também chamada de \emph{função de espalhamento de ponto} (PSF, \emph{point spread function}).
+
+	\end{itemize}
+\end{slide}
+
+\section[ slide = true]{Estimação de função de degradação}
+\begin{slide}{Estimação pela observação da imagem}
+	\begin{itemize}
+		\item Procedimento:
+			\begin{itemize}
+				\item Analisar uma pequena seção retangular (subimagem) que apresente SNR alto (ruído desprezível)
+				\item Subprocessar (restaurar) para chegar ao melhor resultado possível $\hat F_s(u,v)$
+				\item Generalizar para toda imagem
+					\begin{align*}
+						\frac{G_s(u,v)}{\hat F_s(u,v)} =& H_s(u,v)\approx \hat H(u,v)\\
+						\hat F(u,v) =& \frac{1}{\hat H(u,v)} G(u,v)
+					\end{align*}
+					onde $\hat H(u,v)$ é a estimativa da resposta em frequência do filtro de degradação
+			\end{itemize}
+	\end{itemize}
+\end{slide}
+
+\begin{slide}{Estimação por experimentação}
+	\begin{itemize}
+		\item Procedimento:
+			\begin{itemize}
+				\item Pressupõe que um equipamento similar ao systema de aquisição é disponível
+				\item Realizar ensaios com o equipamento até obter imagens com degradação semelhante à da imagem observada
+				\item Estimar a resposta ao impulso usando como entrada um ponto brilhante
+					\begin{equation*}
+						\hat H(u,v) = \frac{G(u,v)}{A}
+					\end{equation*}
+			\end{itemize}
+	\end{itemize}
+	\begin{center}
+		\includegraphics[height = 0.3\textheight]{figs/5-24}
+	\end{center}
+\end{slide}
+
+\begin{slide}{Estimação por modelagem}
+	\begin{itemize}
+		\item Alternativas:
+			\begin{itemize}
+				\item Usar modelos pré-existentes e ir ajustando seus parâmetros até obter um resultado próximo ao observado 
+				\item Derivar o modelo do sistema de degradação
+			\end{itemize}
+		\item Exemplos:
+			\begin{itemize}
+				\item Turbulência atmosférica
+					\begin{equation*}
+						H(u,v) = e^{-k(u^2+v^2)^{5/6}}
+					\end{equation*}
+				\item Movimento linear uniforme entre objeto e câmera
+					\begin{align*}
+						g(x,y) =& \int_0^T f( x - x_0( t ), y - y_0( t ))\,dt\\
+						G(u,v) =& F(u,v) \int_0^T e^{-j2\pi [ x_0 ( t ) u + y_0( t ) v ] }\,dt
+					\end{align*}
+			\end{itemize}
+	\end{itemize}
+\end{slide}
+
+\section[ slide = true]{Filtragem inversa}
+\begin{slide}{Filtragem inversa}
+\begin{itemize}
+	\twocolumn{
+	\item Determinação da imagem restaurada
+		\begin{align*}
+			\hat F(u,v) =& \frac{1}{H(u,v)}G(u,v)\\
+			=& \frac{F(u,v)H(u,v) + N(u,v)}{H(u,v)}\\
+			=& F(u,v) + \frac{N(u,v)}{H(u,v)}
+		\end{align*}
+		Há amplificação de ruído !!}{
+	\item Exemplo
+		\begin{center}
+			\includegraphics[height = 0.35\textheight]{figs/5-25b}
+			\includegraphics[height = 0.35\textheight]{figs/5-27a}
+		\end{center}}
+\end{itemize}
+\end{slide}
+
+\begin{slide}{Filtragem inversa modificada}
+	\begin{itemize}
+		\item Truncar o filtro inverso puro
+			\begin{equation*}
+				H_r(u,v) = \begin{cases} \frac{1}{H(u,v)}, & \sqrt{u^2+v^2}\leq \tau\\
+				0, & \sqrt{u^2+v^2}>\tau \end{cases}
+			\end{equation*}
+	\end{itemize}
+		\begin{center}
+			\includegraphics[height = 0.35\textheight]{figs/5-27b}
+			\includegraphics[height = 0.35\textheight]{figs/5-27c}
+			\includegraphics[height = 0.35\textheight]{figs/5-27d}\\
+			{\small	$\tau = 40$ \hspace{3.5cm}$\tau = 70$\hspace{3.5cm}$\tau = 85$}
+		\end{center}
+	
+\end{slide}
+
+\begin{slide}{Filtro de Wiener}
+	\small
+	\begin{itemize}
+		\item O filtro de Wiener é um filtro linear ótimo no sentido do MSE
+			\begin{equation*}
+				e^2 = E\{(f - \hat f)^2\}
+			\end{equation*}
+		\item Imagem restaurada
+			\begin{equation*}
+				\hat F(u,v) = \left [ \frac{H^\ast(u,v)}{|H(u,v)|^2 + \frac{S_\eta(u,v)}{S_f(u,v)}}\right ]G(u,v)
+			\end{equation*}
+	\end{itemize}
+		\begin{center}
+			\includegraphics[height = 0.35\textheight]{figs/5-28}\\
+			{\footnotesize	Filtro inverso \hspace{2.0cm}Filtro inverso modificado \hspace{2.0cm} Filtro de Wiener}
+		\end{center}
+\end{slide}
 \end{document}
